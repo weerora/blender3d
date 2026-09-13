@@ -2,6 +2,8 @@
 
 เว็บห้องทำงานจาก `Office_Studio_v02.blend` ใช้ Vite + Three.js + TypeScript และโมเดล GLB จริงจาก Blender
 
+เว็บที่เผยแพร่: <https://weerora.github.io/blender3d/>
+
 ## เริ่มใช้งาน
 
 ```sh
