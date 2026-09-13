@@ -1,0 +1,25 @@
+import { NodeIO } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+import { dedup, prune, weld, meshopt } from '@gltf-transform/functions';
+import { MeshoptEncoder } from 'meshoptimizer';
+import { validateBytes } from 'gltf-validator';
+import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
+
+await MeshoptEncoder.ready;
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
+const source = 'assets-source/office-studio.glb';
+const target = 'public/models/office-studio.glb';
+const doc = await io.read(source);
+const namesBefore = doc.getRoot().listNodes().map(n => n.getName());
+const pivots = new Map(doc.getRoot().listNodes().filter(n => n.getExtras().interaction).map(n => [n.getName(), [...n.getTranslation(), ...n.getRotation(), ...n.getScale()]]));
+await doc.transform(dedup(), weld(), prune({ keepExtras: true }), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
+await mkdir('public/models', { recursive: true });
+await io.write(target, doc);
+const validation = await validateBytes(new Uint8Array(await readFile(target)), { maxIssues: 30 });
+const namesAfter = doc.getRoot().listNodes().map(n => n.getName());
+const missing = namesBefore.filter(name => !namesAfter.includes(name));
+const changedPivots = doc.getRoot().listNodes().filter(n => pivots.has(n.getName()) && [...n.getTranslation(), ...n.getRotation(), ...n.getScale()].some((v, i) => Math.abs(v - pivots.get(n.getName())[i]) > 1e-6)).map(n => n.getName());
+const report = { originalBytes: (await stat(source)).size, optimizedBytes: (await stat(target)).size, nodes: namesAfter, missing, changedPivots, validation: validation.issues };
+await writeFile('assets-source/optimization-report.json', JSON.stringify(report, null, 2));
+console.log(JSON.stringify(report, null, 2));
+if (missing.length || changedPivots.length || validation.issues.numErrors) process.exitCode = 1;

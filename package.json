@@ -1,0 +1,27 @@
+{
+  "name": "weer-studio-interactive",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "asset:optimize": "node scripts/optimize-asset.mjs"
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/noto-sans-thai": "^5.3.0",
+    "three": "latest"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "latest",
+    "@gltf-transform/extensions": "latest",
+    "@gltf-transform/functions": "latest",
+    "@types/three": "latest",
+    "gltf-validator": "latest",
+    "meshoptimizer": "latest",
+    "typescript": "latest",
+    "vite": "latest"
+  }
+}

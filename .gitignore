@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.playwright-cli/
+output/
+assets-source/
+*.blend1
+
+# Earlier experiments and local render checks
+Robot_v01.blend
+Robot_v01_preview.png
+Office_Studio_3D.blend
+Office_Studio_preview.png
+Office_v02_progress.png
+Office_v02_cycles_check.png
